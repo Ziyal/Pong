@@ -1,5 +1,5 @@
 # Pong
 
 __Built With:__
-    * Python
-    * Pygame
+  * Python
+  * Pygame
