@@ -1,5 +1,6 @@
 import pygame, sys, os
 from pygame.locals import * 
+from random import randint
 
 # Changing this value speeds up or slows down the game
 FPS = 200
@@ -9,7 +10,7 @@ WINDOWWIDTH = 800
 WINDOWHEIGHT = 500
 LINETHICKNESS = 10
 PADDLESIZE = 50
-PADDLEOFFSET = 20
+PADDLEOFFSET = 50
 
 # Game colors
 BLACK = (0,0,0)
@@ -52,6 +53,7 @@ def checkEdgeCollision(ball, ballDirX, ballDirY):
         ballDirX = ballDirX * -1
     return ballDirX, ballDirY
 
+# Checks if player scored
 def checkPlayerPoints(ball, score, ballDirX):
     # When left wall is hit
     if ball.right == WINDOWWIDTH - LINETHICKNESS:
@@ -60,6 +62,7 @@ def checkPlayerPoints(ball, score, ballDirX):
         score += 1
     return score
 
+# Checks if computer scored
 def checkComputerPoints(ball, score, direction):
     if ball.left == LINETHICKNESS:
         pygame.mixer.music.load('score.wav')
@@ -67,25 +70,32 @@ def checkComputerPoints(ball, score, direction):
         score += 1
     return score
 
+# Controlls the computer's paddle
 def computerPlayer(ball, ballDirX, paddle2):
+    amount = randint(1,2)
+    print(amount)
+
     if ballDirX == -1:
         if paddle2.centery < (WINDOWHEIGHT/2):
-            paddle2.y += 1
+            if amount == 1:
+                paddle2.y += 1
         elif paddle2.centery > (WINDOWHEIGHT/2):
             paddle2.y -=1
     elif ballDirX == 1:
         if paddle2.centery < ball.centery:
             paddle2.y += 1
         else:
-            paddle2.y -= 1
+            if amount == 0:
+                paddle2.y -= 1
     return paddle2
 
+# Checks if the ball hits the paddle and changes ball direction
 def checkHitBall(ball, paddle1, paddle2, ballDirX):
-    if ballDirX == -1 and paddle1.right == ball.left and paddle1.top < ball.top and paddle1.bottom > ball.bottom:
+    if ballDirX == -1 and paddle1.right == ball.left and paddle1.top <= ball.top and paddle1.bottom >= ball.bottom:
         pygame.mixer.music.load('paddle.wav')
         pygame.mixer.music.play(0)
         return -1
-    elif ballDirX == 1 and paddle2.left == ball.right and paddle2.top < ball.top and paddle2.bottom > ball.bottom:
+    elif ballDirX == 1 and paddle2.left == ball.right and paddle2.top <= ball.top and paddle2.bottom >= ball.bottom:
         pygame.mixer.music.load('paddle.wav')
         pygame.mixer.music.play(0)
         return -1
@@ -94,23 +104,25 @@ def checkHitBall(ball, paddle1, paddle2, ballDirX):
 
 
 def displayPlayerScore(playerScore):
-    resultSurf = BASICFONT.render('Player: %s' %(playerScore), True, WHITE)
+    resultSurf = BASICFONT.render('%s' %(playerScore), True, WHITE)
     resultRect = resultSurf.get_rect()
-    resultRect.topleft = (150, 25)
+    resultRect.topleft = (180, 25)
     DISPLAYSURF.blit(resultSurf, resultRect)
 
 def displayComputerScore(computerScore):
-    resultSurf = BASICFONT.render('Computer: %s' %(computerScore), True, WHITE)
+    resultSurf = BASICFONT.render('%s' %(computerScore), True, WHITE)
     resultRect = resultSurf.get_rect()
-    resultRect.topleft = (WINDOWWIDTH-270, 25)
+    resultRect.topleft = (WINDOWWIDTH-240, 25)
     DISPLAYSURF.blit(resultSurf, resultRect)
 
 def main():
     os.environ["SDL_VIDEO_CENTERED"] = "1"
     pygame.init()
+    gameplay = True
+    
     global DISPLAYSURF, BASICFONT
-    BASICFONTSIZE = 20
-    BASICFONT = pygame.font.Font('freesansbold.ttf', BASICFONTSIZE)
+    BASICFONTSIZE = 70
+    BASICFONT = pygame.font.Font('FFFFORWA.ttf', BASICFONTSIZE)
 
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH,WINDOWHEIGHT))
