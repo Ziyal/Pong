@@ -1,6 +1,6 @@
 # Pong
 
-![Pong](https://github.com/Ziyal/Pong/blob/master/pong.gif "Pong")
+![Pong](https://github.com/Ziyal/Pong/blob/master/Pong.gif "Pong")
 
 For the base project I followed [Trevor Appleton's Tutorial](http://trevorappleton.blogspot.com/2014/04/writing-pong-using-python-and-pygame.html) and then modified it to be more like the original pong game. It's a great project to start with to get familiar with Pygame!
 
