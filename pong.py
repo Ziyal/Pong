@@ -30,34 +30,43 @@ def drawPaddle(paddle):
 
     pygame.draw.rect(DISPLAYSURF, WHITE, paddle)
 
+# Creates ball
 def drawBall(ball):
     pygame.draw.rect(DISPLAYSURF, WHITE, ball)
 
+# Puts ball in motion
 def moveBall(ball, ballDirX, ballDirY):
     ball.x += ballDirX
     ball.y += ballDirY
     return ball
 
+# Keeps ball in game
 def checkEdgeCollision(ball, ballDirX, ballDirY):
     if ball.top == (LINETHICKNESS) or ball.bottom == (WINDOWHEIGHT - LINETHICKNESS):
+        pygame.mixer.music.load('wall.wav')
+        pygame.mixer.music.play(0)
         ballDirY = ballDirY * -1
     if ball.left == (LINETHICKNESS) or ball.right == (WINDOWWIDTH - LINETHICKNESS):
+        pygame.mixer.music.load('wall.wav')
+        pygame.mixer.music.play(0)
         ballDirX = ballDirX * -1
     return ballDirX, ballDirY
 
-def checkPoints(paddle1, ball, score, ballDirX):
+def checkPlayerPoints(ball, score, ballDirX):
     # When left wall is hit
-    if ball.left == LINETHICKNESS: 
-        return 0
-    elif ballDirX == -1 and paddle1.right == ball.left and paddle1.top < ball.top and paddle1.bottom > ball.bottom:
+    if ball.right == WINDOWWIDTH - LINETHICKNESS:
+        pygame.mixer.music.load('score.wav')
+        pygame.mixer.music.play(0)
         score += 1
-        return score
-    elif ball.right == WINDOWWIDTH - LINETHICKNESS:
-        score += 5
-        return score
-    else:
-        return score
-    
+    return score
+
+def checkComputerPoints(ball, score, direction):
+    if ball.left == LINETHICKNESS:
+        pygame.mixer.music.load('score.wav')
+        pygame.mixer.music.play(0)
+        score += 1
+    return score
+
 def computerPlayer(ball, ballDirX, paddle2):
     if ballDirX == -1:
         if paddle2.centery < (WINDOWHEIGHT/2):
@@ -73,17 +82,27 @@ def computerPlayer(ball, ballDirX, paddle2):
 
 def checkHitBall(ball, paddle1, paddle2, ballDirX):
     if ballDirX == -1 and paddle1.right == ball.left and paddle1.top < ball.top and paddle1.bottom > ball.bottom:
+        pygame.mixer.music.load('paddle.wav')
+        pygame.mixer.music.play(0)
         return -1
     elif ballDirX == 1 and paddle2.left == ball.right and paddle2.top < ball.top and paddle2.bottom > ball.bottom:
+        pygame.mixer.music.load('paddle.wav')
+        pygame.mixer.music.play(0)
         return -1
     else:
          return 1
 
 
-def displayScore(score):
-    resultSurf = BASICFONT.render('Score: %s' %(score), True, WHITE)
+def displayPlayerScore(playerScore):
+    resultSurf = BASICFONT.render('Player: %s' %(playerScore), True, WHITE)
     resultRect = resultSurf.get_rect()
-    resultRect.topleft = (WINDOWWIDTH - 150, 25)
+    resultRect.topleft = (150, 25)
+    DISPLAYSURF.blit(resultSurf, resultRect)
+
+def displayComputerScore(computerScore):
+    resultSurf = BASICFONT.render('Computer: %s' %(computerScore), True, WHITE)
+    resultRect = resultSurf.get_rect()
+    resultRect.topleft = (WINDOWWIDTH-270, 25)
     DISPLAYSURF.blit(resultSurf, resultRect)
 
 def main():
@@ -109,8 +128,9 @@ def main():
     ballDirX = -1
     ballDirY = -1
 
-    # Score
-    score = 0
+    # Scores
+    playerScore = 0
+    computerScore = 0
 
     # Draws movie parts (paddles and ball)
     paddle1 = pygame.Rect(PADDLEOFFSET, playerOne, LINETHICKNESS, PADDLESIZE)
@@ -142,11 +162,13 @@ def main():
 
         ball = moveBall(ball, ballDirX, ballDirY)
         ballDirX, ballDirY = checkEdgeCollision(ball, ballDirX, ballDirY)
-        score = checkPoints(paddle1, ball, score, ballDirX)
         ballDirX = ballDirX * checkHitBall(ball, paddle1, paddle2, ballDirX)
         paddle2 = computerPlayer(ball, ballDirX, paddle2)
+        playerScore = checkPlayerPoints(ball, playerScore, ballDirX)
+        computerScore = checkComputerPoints(ball, computerScore, ballDirY)
 
-        displayScore(score)
+        displayPlayerScore(playerScore)
+        displayComputerScore(computerScore)
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
