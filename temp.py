@@ -3,9 +3,11 @@ from pygame.locals import *
 
 # Number of frames per second
 # Change this value to speed up or slow down your game
-FPS = 200
+FPS = 40
+#SPEED = 5
 
 #Global Variables to be used through our program
+
 WINDOWWIDTH = 400
 WINDOWHEIGHT = 300
 LINETHICKNESS = 10
@@ -41,8 +43,8 @@ def drawBall(ball):
 
 #moves the ball returns new position
 def moveBall(ball, ballDirX, ballDirY):
-    ball.x += ballDirX
-    ball.y += ballDirY
+    ball.x += (ballDirX * INCREASESPEED)
+    ball.y += (ballDirY * INCREASESPEED)
     return ball
 
 #Checks for a collision with a wall, and 'bounces' ball off it.
@@ -78,20 +80,20 @@ def checkPointScored(paddle1, ball, score, ballDirX):
     #if no points scored, return score unchanged
     else: return score
 
-#Artificial Intelligence of computer player 
+#Artificial Intelligence of computer player       
 def artificialIntelligence(ball, ballDirX, paddle2):
     #If ball is moving away from paddle, center bat
     if ballDirX == -1:
         if paddle2.centery < (WINDOWHEIGHT/2):
-            paddle2.y += 1
+            paddle2.y += INCREASESPEED
         elif paddle2.centery > (WINDOWHEIGHT/2):
-            paddle2.y -= 1
+            paddle2.y -= INCREASESPEED
     #if ball moving towards bat, track its movement. 
     elif ballDirX == 1:
         if paddle2.centery < ball.centery:
-            paddle2.y += 1
+            paddle2.y += INCREASESPEED
         else:
-            paddle2.y -=1
+            paddle2.y -= INCREASESPEED
     return paddle2
 
 #Displays the current score on the screen
@@ -160,7 +162,7 @@ def main():
         ballDirX = ballDirX * checkHitBall(ball, paddle1, paddle2, ballDirX)
         paddle2 = artificialIntelligence (ball, ballDirX, paddle2)
 
-        displayScore(score)
+        #displayScore(score)
 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
